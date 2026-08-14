@@ -12,6 +12,7 @@ pytest-cache-files-*/
 *.egg-info/
 reports/*
 !reports/.gitkeep
+/reports.zip
 snapshots/*
 !snapshots/.gitkeep
 presets/*
