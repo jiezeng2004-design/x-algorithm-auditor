@@ -1,0 +1,27 @@
+schema_version: content-taxonomy-v1
+metadata_priority:
+  - content_type: Reply
+    keywords: [reply, replies, "回复", "回覆"]
+  - content_type: Quote
+    keywords: [quote, quoted, "引用"]
+  - content_type: Thread
+    keywords: [thread, "串文", "长帖"]
+rules:
+  - content_type: Tool Hands-on
+    confidence: medium
+    keywords: ["tool", "tools", "library", "sdk", "api", "repo", "代码", "工具", "实测", "上手"]
+  - content_type: AI News
+    confidence: medium
+    keywords: ["ai news", "breaking", "announced", "launches", "release notes", "新闻", "发布", "快讯"]
+  - content_type: Tutorial
+    confidence: medium
+    keywords: ["how to", "tutorial", "guide", "step by step", "教程", "指南", "步骤", "如何"]
+  - content_type: Comparison
+    confidence: medium
+    keywords: [" vs ", "versus", "compare", "comparison", "对比", "比较", "哪个好"]
+  - content_type: Builder / Project
+    confidence: medium
+    keywords: ["building", "built", "project", "prototype", "open source", "项目", "开源", "构建", "做了"]
+  - content_type: Social
+    confidence: medium
+    keywords: ["gm", "good morning", "thanks", "thoughts", "community", "早上好", "感谢", "想法", "社区"]

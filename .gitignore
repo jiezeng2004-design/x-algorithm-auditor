@@ -1,0 +1,42 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.skill-scaffold/
+.test-tmp/
+build/
+dist/
+pytest-base-phase1*/
+pytest-cache-files-*/
+*.egg-info/
+reports/*
+!reports/.gitkeep
+snapshots/*
+!snapshots/.gitkeep
+presets/*
+!presets/.gitkeep
+*.xlsx
+*.csv
+!tests/fixtures/*.csv
+!tests/fixtures/*.xlsx
+!examples/
+!examples/analytics-example.csv
+!examples/analytics-example.xlsx
+!examples/output/
+!examples/output/audit-example.md
+!examples/output/scored-posts-example.csv
+tests/runtime/*
+!tests/runtime/.gitkeep
+.env
+
+# Private/local-only user material. Real Analytics and generated CSV/XLSX are
+# already covered by the file-type and reports rules above; these entries keep
+# private presets, ad-hoc validation folders, logs, and temporary files local.
+private/
+.private/
+real-validation*/
+REAL_VALIDATION.md
+*.private.*
+*.tmp
+*.log

@@ -1,0 +1,4 @@
+interface:
+  display_name: "X Algorithm Auditor"
+  short_description: "Audit X Analytics with explainable account-relative signals"
+  default_prompt: "Use $x-algorithm-auditor to audit my X Analytics CSV and explain the four scores."

@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "x-algorithm-auditor"
+version = "0.1.0"
+description = "Local, account-relative X Analytics auditor grounded in commit-pinned public algorithm snapshots."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = [
+  "pandas>=2.2",
+  "pydantic>=2.8",
+  "PyYAML>=6.0",
+  "openpyxl>=3.1",
+  "typer>=0.12",
+]
+
+[project.scripts]
+xalgo = "x_algorithm_auditor.cli:app"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "ruff>=0.6",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+  ".test-tmp",
+  "pytest-base-phase1*",
+  "pytest-cache-files-*",
+  "tests/runtime",
+]
+force-exclude = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# Long human-facing report strings and full provenance URLs are intentionally not
+# split mechanically; Ruff's formatter remains the structural style authority.
+ignore = ["E501"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/x_algorithm_auditor"]
+
+# The root config directory remains the readable source/template location. The
+# wheel receives those exact files so installed commands do not depend on cwd.
+[tool.hatch.build.targets.wheel.force-include]
+"config/scoring.yaml" = "x_algorithm_auditor/resources/scoring.yaml"
+"config/content_taxonomy.yaml" = "x_algorithm_auditor/resources/content_taxonomy.yaml"

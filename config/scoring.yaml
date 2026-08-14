@@ -1,0 +1,45 @@
+schema_version: methodology-v1
+dataset_observable_threshold: 0.80
+minimum_alignment_signals: 2
+minimum_weight_coverage: 0.50
+shrinkage:
+  k_min: 50
+  k_max: 500
+  very_small_cohort_k: 100
+eligibility:
+  floor_min: 20
+  floor_max: 100
+  high_multiple: 4
+winsorization:
+  minimum_observations: 20
+  lower_quantile: 0.05
+  upper_quantile: 0.95
+conversion_weights:
+  follows: 0.60
+  profile_visits: 0.40
+efficiency_weights:
+  replies: 0.20
+  quotes: 0.15
+  reposts: 0.15
+  shares: 0.15
+  bookmarks: 0.15
+  link_clicks: 0.10
+  detail_expands: 0.05
+  likes: 0.05
+phase2_policy:
+  version: phase2-policy-v1
+  quadrants:
+    median_cutoff: 50
+    core_winner_cutoff: 75
+  detectors:
+    minimum_eligible_cohort: 8
+    cheap_exposure:
+      minimum_distribution_score: 75
+      maximum_conversion_score: 25
+      maximum_efficiency_score: 25
+    under_distributed_winner:
+      maximum_distribution_score: 40
+      minimum_conversion_score: 75
+      minimum_efficiency_score: 75
+  content_analysis:
+    minimum_eligible_sample: 3

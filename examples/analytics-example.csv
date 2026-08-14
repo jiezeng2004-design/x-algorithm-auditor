@@ -1,0 +1,17 @@
+Post ID,Post Text,Created At,Post Type,Impressions,Likes,Replies,Reposts,Quotes,Shares,Bookmarks,Profile Visits,Follows,Link Clicks,Detail Expands,Date Range Start,Date Range End
+tiny,Three impressions and one reply should stay low-confidence,2026-04-01T12:00:00Z,Post,3,0,1,0,0,0,0,0,0,0,0,2026-04-01,2026-04-15
+low-1,Short synthetic note one,2026-04-02T12:00:00Z,Post,20,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+low-2,Short synthetic note two,2026-04-03T12:00:00Z,Post,40,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+low-3,Short synthetic note three,2026-04-04T12:00:00Z,Post,60,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+under-winner,How to use this tool step by step tutorial,2026-04-05T12:00:00Z,Post,100,20,10,5,2,2,5,20,10,5,10,2026-04-01,2026-04-15
+tool-2,Tool SDK hands-on notes,2026-04-06T12:00:00Z,Post,120,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+tool-3,API tool implementation notes,2026-04-07T12:00:00Z,Post,150,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+news-1,AI news model announced,2026-04-08T12:00:00Z,Post,180,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+news-1,AI news model announced,2026-04-08T12:00:00Z,Post,180,1,1,1,1,1,1,1,1,1,1,2026-04-16,2026-04-30
+news-2,Breaking AI news update,2026-04-09T12:00:00Z,Post,220,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+comparison-1,Tool A vs Tool B comparison,2026-04-10T12:00:00Z,Post,300,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+reply-1,A practical tool note,2026-04-11T12:00:00Z,Reply,500,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+project-1,Building an open source project,2026-04-12T12:00:00Z,Post,800,1,1,1,1,1,1,1,1,1,1,2026-04-01,2026-04-15
+social-1,Thanks community,2026-04-13T12:00:00Z,Post,1000,1,1,1,1,1,,1,1,1,1,2026-04-01,2026-04-15
+cheap-exposure,AI news release notes,2026-04-14T12:00:00Z,Post,1200,0,0,0,0,0,0,0,0,0,0,2026-04-01,2026-04-15
+zero-impressions,No exposure yet; rates are unavailable,2026-04-15T12:00:00Z,Post,0,0,0,0,0,0,0,0,0,0,0,2026-04-01,2026-04-15
