@@ -246,4 +246,4 @@ See the repository docs for methodology, competitive analysis and implementation
 
 ## License
 
-See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
