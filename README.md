@@ -1,92 +1,173 @@
 # X Algorithm Auditor
 
-X Algorithm Auditor is a local CLI that connects the official public
-[`xai-org/x-algorithm`](https://github.com/xai-org/x-algorithm) source to a
-creator's exported X Analytics. It calculates an account-relative **Observed
-Algorithm Alignment Proxy**, finds **Cheap Exposure** and **Under-distributed
-Winner** review candidates, and produces explainable Markdown plus
-machine-readable CSV.
+> **把你的 X Analytics 导出表，变成一份“哪些内容值得继续放大、哪些只是拿了曝光”的本地审计报告。**
+>
+> No X API. No login. No scraping. No paid model. Your analytics file stays local.
 
-- Runs locally on CSV/XLSX exports.
-- Requires no X API, OAuth, account login, scraping, browser automation, GPU,
-  or paid model.
-- Uses commit-pinned public algorithm source with explicit live/cached
-  provenance.
+X Algorithm Auditor connects two things you can actually inspect:
+
+1. the public [`xai-org/x-algorithm`](https://github.com/xai-org/x-algorithm) source at a pinned commit;
+2. your own exported X Analytics CSV / XLSX.
+
+It then produces account-relative, explainable review signals such as:
+
+- **Observed Algorithm Alignment Proxy**;
+- **Cheap Exposure** candidates;
+- **Under-distributed Winner** candidates;
+- content-efficiency / conversion / distribution comparisons;
+- a Markdown report plus scored CSV for follow-up analysis.
 
 > [!IMPORTANT]
-> This is **NOT an official X ranking score**. It does not know Phoenix
-> `viewer × post` probabilities, predict future impressions, detect shadowbans,
-> or access private X production configuration.
+> **This is not an official X ranking score.** It does not know private production weights, Phoenix viewer × post probabilities, live experiments, shadowban state or future impressions.
 
 ## Why this exists
 
-The project is intentionally not another static algorithm explainer, draft
-grader, reply scraper, or generic content-advice prompt. Its useful boundary
-is a reproducible audit chain:
+Most “X algorithm” advice has one of two problems:
+
+- it explains public source code but never connects that source to your own content history;
+- or it scores posts with opaque rules that cannot be traced back to observable data.
+
+X Algorithm Auditor is designed around a reproducible chain instead:
 
 ```text
-commit-pinned public source
-  -> dynamic Algorithm Snapshot and change evidence
-  -> nullable CSV/XLSX ingestion and non-additive deduplication
-  -> small-sample-protected, account-relative four-score audit
-  -> Cheap Exposure and Under-distributed Winner review queues
-  -> evidence-bearing Markdown and stable scored CSV
+public X algorithm source @ pinned commit
+                ↓
+observable signal snapshot
+                ↓
+your local Analytics export
+                ↓
+account-relative scoring
+                ↓
+review queues + evidence-bearing report
 ```
 
-The [competitive analysis](docs/competitive-analysis.md) records the research
-against the official repository and the three related open-source projects,
-including why their older source conclusions are not copied into this tool.
+The goal is not to claim “this is how X ranks you.”
 
-## Install
+The goal is:
 
-Python 3.11+ is required. The tool is CPU-only and has no X API, login,
-browser automation, scraping, GPU, or paid-model dependency.
+> **Use public algorithm evidence + your own observed outcomes to decide which posts deserve closer review.**
 
-With `uv` from a source checkout:
+## Quick start
+
+Requirements:
+
+- Python 3.11+
+- a per-post X Analytics export in CSV or XLSX
+
+Install from source with `uv`:
 
 ```bash
 uv sync --all-groups
 uv run xalgo --help
 ```
 
-With `pip` from a source checkout or built wheel:
+Or with pip:
 
 ```bash
 python -m pip install .
 xalgo --help
 ```
 
-The wheel bundles the default methodology and generic content-taxonomy YAML
-files. An installed command therefore does not rely on the original checkout
-or its current working directory.
-
-## Audit an Analytics export
+Audit a file:
 
 ```bash
 xalgo audit analytics.csv
+```
+
+Or XLSX with an output directory:
+
+```bash
 xalgo audit analytics.xlsx --output reports
 ```
 
-The input remains local. The loader supports only CSV and XLSX; it maps known
-header aliases into a canonical nullable schema and reports unknown, missing,
-malformed, negative, and zero-denominator conditions rather than turning them
-into zeros.
+The input stays local.
 
-Account overview and per-post analytics may use different coverage or
-attribution semantics and must not be automatically summed or merged. The
-auditor requires a per-post export; an account overview may be reviewed as
-separate context, but it is not a scoring input or reconciliation source.
+## What you get
 
-For a reproducible offline run, use a previously validated snapshot cache:
+Typical output:
 
-```bash
-xalgo audit analytics.csv --offline --snapshot-dir snapshots --output reports
+```text
+reports/audit-YYYY-MM-DD.md
+reports/scored-posts.csv
 ```
 
-Each report identifies `live` or `cached` source mode and the full commit SHA.
-`cached` means a local validated snapshot was used; it is never evidence of a
-live fetch. A successful live fetch is likewise evidence only of the public
-source at that commit, not of X production experiments or per-viewer settings.
+The Markdown report summarizes:
+
+- data coverage and quality;
+- public algorithm snapshot provenance;
+- observable vs unobservable signals;
+- core winners;
+- Cheap Exposure candidates;
+- Under-distributed Winners;
+- traffic-without-asset patterns;
+- content-type observations;
+- operating recommendations;
+- methodology and limitations.
+
+The CSV keeps the underlying post-level metrics, scores, eligibility, detector reasons and provenance so the result stays inspectable.
+
+## The four lenses
+
+Every final score is **relative to the supplied account cohort**, not a global benchmark.
+
+| Lens | Question it answers | What it does NOT mean |
+| --- | --- | --- |
+| **Algorithm Alignment** | Does observed action-rate structure align relatively well with available public weighted signals? | X's real ranking score |
+| **Distribution** | How much exposure did this post receive relative to this account history? | Content quality |
+| **Creator Conversion** | Did exposure become profile visits / follows where observed? | Universal growth quality |
+| **Content Efficiency** | How much valuable observed behavior occurred per exposure? | Future distribution prediction |
+
+The tool keeps `unavailable` separate from numeric `0` and applies evidence / sample-size gates before strong classifications.
+
+## The two most useful review queues
+
+### Cheap Exposure
+
+A post may receive strong distribution but weak downstream conversion / efficiency relative to your own history.
+
+That does **not** mean “bad post.” It means:
+
+> This post got attention, but the observed downstream value was weak enough to deserve review.
+
+The detector uses versioned account-relative thresholds and evidence gates instead of a raw “high impressions = Cheap Exposure” shortcut.
+
+### Under-distributed Winner
+
+A post may show relatively strong conversion + efficiency while receiving weak distribution.
+
+That does **not** prove X under-ranked it or that reposting will work.
+
+It means:
+
+> The observed response quality was strong relative to your account history, so the content may deserve repackaging or another look.
+
+Qualified rows can enter the Repackage Queue.
+
+## Reproducible source provenance
+
+The auditor pins the public algorithm source to a commit and records whether the run used:
+
+- `live` source retrieval; or
+- a previously validated `cached` snapshot.
+
+Offline run:
+
+```bash
+xalgo audit analytics.csv \
+  --offline \
+  --snapshot-dir snapshots \
+  --output reports
+```
+
+A cached run proves only which validated public-source snapshot was used. A live run proves only which public commit was fetched. Neither reveals X private production configuration.
+
+## Input discipline matters
+
+The loader supports CSV / XLSX and keeps missing / malformed values nullable instead of silently converting them to zero.
+
+It also distinguishes per-post analytics from account-overview data.
+
+Do **not** automatically sum or merge account-overview metrics into per-post scoring: coverage and attribution semantics may differ.
 
 Useful options:
 
@@ -99,152 +180,70 @@ xalgo audit analytics.xlsx \
   --output reports
 ```
 
-`--strict` rejects malformed, negative, and percentage-for-count diagnostics.
-`--alias-map` is an explicit source-header-to-canonical-field mapping, not a
-fuzzy guess. `--config` selects a methodology-v1 policy file.
+`--strict` rejects problematic numeric conditions instead of letting them quietly pass through.
 
-## Four separate account-relative lenses
+## Experimental content-type analysis
 
-Every final score is a 0–100 average-rank percentile within the supplied,
-deduplicated account cohort. Scores are not calibrated probabilities and are
-not cross-account benchmarks.
+Content classification is heuristic and should be treated as descriptive, not authoritative.
 
-| Lens | Question it answers | What it deliberately does not mean |
-| --- | --- | --- |
-| Algorithm Alignment | Does the post's **observed** action-rate structure align relatively well with available public weighted signals? | X's real ranking score or Phoenix probability |
-| Distribution | How much observed exposure did the post receive relative to this account history? | Content quality or causation |
-| Creator Conversion | Did exposure become profile visits and follows? | A proxy for likes or a universal growth target |
-| Content Efficiency | How much valuable observed behavior occurred per exposure? | Distribution volume or a prediction |
-
-Rates use only positive-impression denominators. Raw rates are retained, while
-score inputs use transparent account-baseline shrinkage and eligible-only
-winsorization. A `3 impressions / 1 reply` row remains inspectable, but its
-Alignment, Conversion, and Efficiency final scores are unavailable; it cannot
-enter quadrants, badges, detectors, or strong recommendations. Distribution
-remains separately observable.
-
-`unavailable` is never numeric `0`: an observed numeric zero remains zero,
-while an absent column, blank/malformed value, or zero denominator is nullable.
-
-## Detectors and recommendations
-
-The detector thresholds are versioned account-relative operating policy, not X
-thresholds or guarantees.
-
-- **Cheap Exposure** requires Distribution >= 75, Conversion <= 25, and
-  Efficiency <= 25, with all metrics observed, score-eligible exposure, and a
-  detector cohort of at least eight eligible posts. It is not merely a
-  high-impressions label.
-- **Under-distributed Winner** requires Distribution <= 40, Conversion >= 75,
-  and Efficiency >= 75 under the same evidence gates. Only qualified rows enter
-  the Repackage Queue; the flag does not prove why distribution was lower or
-  that repackaging will work.
-- **Core Winner** is stricter than the high/high quadrant: Alignment and
-  Conversion must both be at least 75 with exposure eligibility and adequate
-  Alignment coverage.
-
-## Content Type Analysis — Experimental
-
-Current content classification is heuristic and should be treated as
-descriptive rather than authoritative. The local classifier is deterministic
-and replaceable; metadata Reply, Quote, and Thread labels take precedence over
-keyword rules. Type-level recommendations require sufficient eligible
-observations and include the supporting metric, account baseline, sample count,
-comparison, and uncertainty. When evidence is insufficient, the tool says so
-instead of emitting generic advice.
-
-## Outputs
-
-An audit writes a paired report without silently overwriting an existing pair:
-
-```text
-reports/audit-YYYY-MM-DD.md
-reports/scored-posts.csv
-```
-
-The Markdown report has thirteen sections: Executive Summary, Data Coverage,
-Algorithm Snapshot, Observable Signals, Unobservable Signals, Core Winners,
-Cheap Exposure, Under-distributed Winners, Traffic Without Asset, Content Type
-Analysis, Operating Recommendations, Methodology Notes, and Limitations.
-
-The CSV preserves post identifiers, observed metrics, raw/stabilized/scoring
-rates, four score families, coverage/confidence, per-signal Alignment detail,
-deduplication provenance, classifier evidence, detector reasons/metrics,
-quadrants, and cached/live snapshot provenance. Empty values are unavailable;
-numeric zero is retained as `0`.
+The local classifier is deterministic and replaceable. Recommendations require enough eligible observations; when evidence is insufficient, the tool should say so instead of inventing generic advice.
 
 ## Optional personal preset
 
-Presets are local YAML files selected explicitly with `--preset`. They use
-`schema_version: preset-v1` and may contain `creator_goal`, `niche`,
-`content_taxonomy_keywords`, `historical_baseline`, and `preferred_metrics`.
+Presets are local YAML files selected explicitly with `--preset`.
 
-```yaml
-schema_version: preset-v1
-creator_goal: Improve repeatable account-asset outcomes
-niche: Example niche
-content_taxonomy_keywords:
-  Comparison: ["tool-a vs tool-b"]
-historical_baseline:
-  follows_per_1k_impressions: 2.5
-preferred_metrics: [Creator Conversion, follows_per_1k_impressions]
-```
+They can describe things like:
 
-The schema rejects unknown fields, invalid labels, invalid types, blanks, and
-non-finite historical values with actionable errors. A preset can extend local
-classifier keywords and add report context/comparison display only. It cannot
-override the Algorithm Snapshot, Missing != Zero, generic score formulas,
-small-sample gates, detector policy, or current-data conclusions. Historical
-values are comparison priors; the new Analytics export remains the scored
-evidence. Running without a preset is the fully supported generic core.
+- creator goal;
+- niche;
+- content taxonomy keywords;
+- historical baseline;
+- preferred metrics.
 
-## Generic Codex Skill
+Presets influence local analysis context. They do not give the tool access to private X ranking systems.
 
-[skill/SKILL.md](skill/SKILL.md) defines the reusable local workflow:
+## Privacy
+
+- CSV / XLSX input stays local;
+- no X API required;
+- no OAuth required;
+- no account login;
+- no browser automation;
+- no scraping;
+- no paid model;
+- CPU-only workflow.
+
+## What this tool cannot tell you
+
+It cannot reliably answer:
+
+- “What is my real X ranking score?”
+- “Am I shadowbanned?”
+- “Why did Phoenix rank this specific viewer/post pair?”
+- “What will my next post's impressions be?”
+- “Which private production weights is X using today?”
+
+If a report appears to imply those claims, treat that as a bug in interpretation.
+
+## Methodology principle
+
+The project deliberately prefers:
 
 ```text
-Validate -> Snapshot -> Normalize -> Score -> Detect -> Explain -> Recommend
+observable evidence
+> transparent uncertainty
+> reproducible heuristics
+> confident-sounding guesses
 ```
 
-It repeats the proxy, missing-data, cached-source, low-sample, and no-prediction
-boundaries so the tool can be applied to another creator without importing a
-private conclusion or personal voice profile.
+That makes the output useful as an **audit and review aid**, not an oracle.
 
-## Synthetic examples
+## Documentation
 
-The repository contains only synthetic sample data:
+See the repository docs for methodology, competitive analysis and implementation notes, including:
 
-- [analytics-example.csv](examples/analytics-example.csv)
-- [analytics-example.xlsx](examples/analytics-example.xlsx)
-- [generated audit report](examples/output/audit-example.md)
-- [generated scored CSV](examples/output/scored-posts-example.csv)
-
-The input includes a duplicate export row, missing cell, zero-impression row,
-low-exposure row, multiple content types, and detector-rich rows. The generated
-report/CSV come from the current CLI with a validated cached snapshot; inspect
-the report for the exact commit and source mode. Do not replace these examples
-with real Analytics.
-
-## Privacy and limitations
-
-The tool performs local file processing and does not request credentials. Audit
-reports can contain post text and account performance, so users are responsible
-for secure storage, sharing, and redaction.
-
-This tool cannot:
-
-- calculate an official X ranking score or Phoenix prediction;
-- predict future impressions, follows, revenue, or growth;
-- detect a shadowban, hidden enforcement state, or visibility-filtering result;
-- bypass filters or recommendation systems; or
-- guarantee distribution, recommendations, or follower growth.
-
-Public repository defaults can differ from runtime experiments, model modes,
-filters, candidate retrieval, reranking, and per-viewer context. Aggregate
-Analytics cannot recover those inputs. See the detailed
-[methodology](docs/methodology.md), [architecture](docs/architecture.md), and
-[limitations](docs/limitations.md).
+- [competitive analysis](docs/competitive-analysis.md)
 
 ## License
 
-X Algorithm Auditor is available under the [MIT License](LICENSE).
+MIT. See [LICENSE](LICENSE).
